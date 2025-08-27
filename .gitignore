@@ -1,0 +1,6 @@
+__pycache__/
+data/labels
+dataset_split
+runs
+yolo11n.pt
+yolov8n.pt
