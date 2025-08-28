@@ -3,11 +3,17 @@ import cv2
 import easyocr
 
 
-def get_bbox_from_xml(file):
+
+def get_size_from_xml(file):
     tree = etree.parse(file)
 
     w = int(tree.xpath("//size/width")[0].text)
     h = int(tree.xpath("//size/height")[0].text)
+
+    return w, h
+
+def get_bbox_from_xml(file):
+    tree = etree.parse(file)
 
     xmin = int(tree.xpath("//object/bndbox/xmin")[0].text) 
     ymin = int(tree.xpath("//object/bndbox/ymin")[0].text) 
@@ -15,11 +21,11 @@ def get_bbox_from_xml(file):
     ymax = int(tree.xpath("//object/bndbox/ymax")[0].text) 
     
     
-    return xmin, ymin, xmax, ymax, w, h
+    return xmin, ymin, xmax, ymax
 
 def preprocess_license_plate_image(img, bbox):
 
-    xmin, ymin, xmax, ymax, w ,h = bbox
+    xmin, ymin, xmax, ymax = bbox
     
     license_plate_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
