@@ -6,42 +6,40 @@ from util import YOLO_read_license_plate
 
 sample_ratio = 0.05
 
-# Pastas
+
 data_dir = "data/images"
 results_dir = "results"
 sample_dir = os.path.join(results_dir, "sample")
 processed_dir = os.path.join(results_dir, "processed_images")
 
-# Criar diretórios
+
 os.makedirs(sample_dir, exist_ok=True)
 os.makedirs(processed_dir, exist_ok=True)
 
-# Listar imagens disponíveis
+
 images = [f for f in os.listdir(data_dir) if f.lower().endswith((".png", ".jpg", ".jpeg"))]
 
-# Selecionar 5% das imagens aleatoriamente
 sample_size = max(1, int(len(images) * sample_ratio))
 sample_images = random.sample(images, sample_size)
 
-# Copiar imagens selecionadas para sample/
+
 for img_name in sample_images:
     src = os.path.join(data_dir, img_name)
     dst = os.path.join(sample_dir, img_name)
     if not os.path.exists(dst):
         cv2.imwrite(dst, cv2.imread(src))
 
-# Rodar OCR nas imagens amostradas
+
 csv_path = os.path.join(results_dir, "test_results.csv")
 
 with open(csv_path, "w", newline="", encoding="utf-8") as csvfile:
     writer = csv.writer(csvfile)
-    writer.writerow(["image", "ocr-results"])  # cabeçalho
-
+    writer.writerow(["image", "ocr-results"]) 
     for img_name in sample_images:
         img_path = os.path.join(sample_dir, img_name)
         img = cv2.imread(img_path)
 
-        results = YOLO_read_license_plate(img, car=None)  # <-- ajuste car se precisar
+        results = YOLO_read_license_plate(img, car=None) 
 
         if results["success"] and results["plates"]:
             
@@ -49,9 +47,8 @@ with open(csv_path, "w", newline="", encoding="utf-8") as csvfile:
                 
                 writer.writerow([img_name, plate_text])
 
-            # salvar processed_images (cada placa em arquivo separado)
             for idx, proc_img in enumerate(results["processed_images"]):
-                
+
                 proc_save_path = os.path.join(processed_dir, f"{os.path.splitext(img_name)[0]}_plate{idx}.png")
                 cv2.imwrite(proc_save_path, proc_img)
 

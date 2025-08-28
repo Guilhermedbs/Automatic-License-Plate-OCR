@@ -1,5 +1,4 @@
 # Automatic-License-Plate-OCR
-# Automatic-License-Plate-OCR
 
 ## Description
 A Python-based automatic license plate recognition (OCR) project, designed to read and extract license plate data from images. It includes preprocessing, dataset handling, training/testing scripts, and utilities for end-to-end OCR pipeline.
