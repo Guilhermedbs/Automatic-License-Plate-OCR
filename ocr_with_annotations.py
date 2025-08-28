@@ -1,6 +1,6 @@
 import cv2
-import utils
-from utils import get_bbox_from_xml, preprocess_license_plate_image, read_licence_plate
+import util
+from util import get_bbox_from_xml, preprocess_license_plate_image, read_license_plate
 
 
 car = '2'
@@ -11,9 +11,9 @@ bbox = get_bbox_from_xml(file)
 
 processed_image = preprocess_license_plate_image(img, bbox)
 
-plates = read_licence_plate(processed_image, car)
+plate = read_license_plate(processed_image, car)
 
-print(plates)
+print('Plate number:', plate[0], 'confiabily score:', float(plate[1]))
 
 cv2.imshow('imagem',processed_image)
 cv2.waitKey(0)   
