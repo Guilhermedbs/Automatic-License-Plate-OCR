@@ -46,14 +46,17 @@ with open(csv_path, "w", newline="", encoding="utf-8") as csvfile:
             for plate_text, score in results["plates"]:
                 
                 writer.writerow([img_name, plate_text])
-
+            
+            
+            bbox_save_path = os.path.join(processed_dir, f'{os.path.splitext(img_name)[0]}_bbox.png')
+            cv2.imwrite(bbox_save_path, results["image_with_boxes"])
+            
             for idx, proc_img in enumerate(results["processed_images"]):
 
                 proc_save_path = os.path.join(processed_dir, f"{os.path.splitext(img_name)[0]}_plate{idx}.png")
                 cv2.imwrite(proc_save_path, proc_img)
 
-                bbox_save_path = os.path.join(processed_dir, f'{os.path.splitext(img_name)[0]}_bbox{idx}.png')
-                cv2.imwrite(bbox_save_path, results["image_with_boxes"])
+                
 
         else:
             

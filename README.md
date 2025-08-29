@@ -1,93 +1,71 @@
 # Automatic-License-Plate-OCR
 
 ## Description
-A Python-based automatic license plate recognition (OCR) project, designed to read and extract license plate data from images. It includes preprocessing, dataset handling, training/testing scripts, and utilities for end-to-end OCR pipeline.
+A Python-based automatic license plate optical character recognition (OCR) project, designed to read and extract license plate data from images. It includes preprocessing, dataset handling, training/testing scripts, and utilities for end-to-end OCR pipeline. using data from kaggle challenge: https://www.kaggle.com/datasets/andrewmvd/car-plate-detection
 
 ## Features
-- **Dataset handling** via `data/` directory.
-- **Convert XML to TXT** tool (`convert_xml_to_txt.py`) to transform annotation formats.
+- **Dataset** `data/` directory.
+- **Convert XML to TXT** tool (`convert_xml_to_txt.py`) to transform annotation formats to YOLO format.
 - **Dataset splitting** using `split_dataset.py` for train/test partitioning.
-- **Main OCR pipeline** implemented in `main.py`, coordinating detection and recognition stages.
-- **Testing script** (`test.py`) for evaluating model performance.
-- **Utility functions** (`utils.py`) to support image processing and annotation management.
+- **Detect licence plates with YOLO** using trained model to automatically generate bounding boxes  
+- **License plates OCR** using EasyOCR 
+
 
 ## Getting Started
 
 ### Prerequisites
 - Python 3.x
-- Key dependencies (likely): OpenCV, OCR engine (like Tesseract or EasyOCR), and an object detection framework (e.g., YOLO).  
-*(Note: install specifics may depend on implementation details.)*
+- Key dependencies: OpenCV, EasyOCR and YOLO
 
 ### Installation
 ```bash
 git clone https://github.com/Guilhermedbs/Automatic-License-Plate-OCR.git
 cd Automatic-License-Plate-OCR
-pip install -r requirements.txt
 ```
 
-# Automatic License Plate OCR
 
 ## Usage
+
+### Observation: All scripts and commands must be executed in Automatic-License-Plate-OCR directory
 
 ### 1. Prepare Dataset
 * Place images and XML annotations in the `data/` directory.
 * Convert annotations:
+* Run `convert_xml_to_txt.py` script to convert the bounding box annotations to the format compatible to YOLO  
 
+### 2. Split the Dataset and Train YOLO model
+
+- Run `split_dataset.py`
+
+- After running it, Run the following comand on terminal
 ```bash
-python convert_xml_to_txt.py --input data/annotations/ --output data/labels/
+yolo detect train data=license_plate.yaml model=yolov8n.pt epochs=50 imgsz=640 batch=16
 ```
 
-### 2. Split the Dataset
+### 3. Generate Results
 
-```bash
-python split_dataset.py --data data/ --train_ratio 0.8
-```
+`generate_results.py ` 
 
-### 3. Run OCR Pipeline
+This script automates **sampling, processing, and testing license plate OCR** using the `YOLO_read_license_plate` function.
 
-```bash
-python main.py --data data/ --model path/to/model
-```
+### How it works
+1. **Sample images**  
+   - Randomly selects 5% of the images from the `data/images` folder.  
+   - Copies them into `results/sample` for testing.  
 
-### 4. Evaluate Results
+2. **Run license plate detection**  
+   - Applies YOLO-based OCR on each sampled image.  
 
-```bash
-python test.py --predictions output/ --ground_truth data/labels/
-```
+3. **Save results**  
+   - Writes detection results (`image name`, `plate text`) into `results/test_results.csv`.  
+   - Saves bounding-box annotated images into `results/processed_images`.  
+   - Saves cropped plate images (one file per detected plate) into `results/processed_images`.  
 
-### 5. Use Utilities
-* Additional dataset or image tools are available in `utils.py`.
 
-## Project Structure
+### 4. Single image OCR 
 
-```
-Automatic-License-Plate-OCR/
-├── data/
-│   ├── images/
-│   ├── annotations/
-│   └── labels/
-├── convert_xml_to_txt.py
-├── split_dataset.py
-├── main.py
-├── test.py
-├── utils.py
-└── README.md
-```
+Use `ocr_with_annotations.py` to make a license plate OCR for only one image using annotations as source of the bounding boxes 
 
-## Potential Extensions
+Use `ocr_with_yolo.py` to make a license plate OCR for only one image using the trained YOLO model as source of the bounding boxes 
 
-* Integration with popular OCR libraries like **Tesseract**, **EasyOCR**, or **CRNN models**.
-* Incorporate **license plate detection** using models like **YOLOv3/v5** or **OpenALPR**.
-* Support for **low-resolution enhancement** or **super-resolution** preprocessing.
-* Real-time video processing and support for multilingual plates, inspired by efficient YOLO-based recognition systems.
 
-## Contributing
-
-Contributions are welcome! You can:
-* Add detection or OCR model integrations
-* Improve dataset handling
-* Enhance accuracy, performance, or add real-time support
-
-## License
-
-*(If no license provided, it's recommended to specify one, such as MIT or Apache.)*

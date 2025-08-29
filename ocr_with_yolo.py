@@ -1,60 +1,31 @@
 import cv2
-from util import get_bbox_from_xml, preprocess_license_plate_image, read_license_plate
+from util import YOLO_read_license_plate
 from ultralytics import YOLO
 
 
-model = YOLO("runs/detect/train/weights/best.pt")
-
-
-car = '0'
-file = f'data/annotations/Cars{car}.xml'
+car = '98'
 img = cv2.imread(f'data/images/Cars{car}.png')
 
+results = YOLO_read_license_plate(img)
 
-img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-plates = dict()
-results = model(img_rgb)
-bboxes = []
-if results[0].boxes is not None and len(results[0].boxes) > 0:
+if results['success'] == True:
+    
+    i = 0
+    for plate_text, score in results["plates"]:
+        print(f'Plate text {i} :{plate_text}')
+        i += 1
+    processed_image = results['processed_images']
+    image_with_boxes = results['image_with_boxes']
+    
+    i=0
 
-    for result in results:
-        boxes = result.boxes  
-        
-        for box in boxes:
-            
-            xmin, ymin, xmax, ymax = box.xyxy[0].tolist()
-            xmin = int(xmin)
-            ymin = int(ymin)
-            xmax = int(xmax)
-            ymax = int(ymax)
-            
-            conf = float(box.conf[0])
-
-            bbox = xmin, ymin, xmax, ymax       
-
-            processed_image = preprocess_license_plate_image(img, bbox)
-
-            plates = read_license_plate(processed_image, car) 
-            
-
-            cls = int(box.cls[0])
-            bboxes.append((xmin, ymin, xmax, ymax, conf, cls))
-
-
-            print(f"Class: {cls}, Conf: {conf:.2f}, BBox: [{xmin:.0f}, {ymin:.0f}, {xmax:.0f}, {ymax:.0f}]")
-            cv2.rectangle(img, (xmin, ymin), (xmax, ymax), (0, 255, 0), 2)
-
-    print(plates)
-    cv2.imshow('img', img)
-    cv2.imshow('image',processed_image)
+    cv2.imshow('image with boxes',image_with_boxes)  
+    
+    for processed_image in results['processed_images']:
+      
+        cv2.imshow(f'processed image {i}',processed_image)
+        i += 1
     cv2.waitKey(0)   
     cv2.destroyAllWindows()
-
-else:
-    print('The model could not detect any license plate')
-    cv2.imshow('img', img)
-    cv2.waitKey(0)   
-    cv2.destroyAllWindows()
-       
 
 
