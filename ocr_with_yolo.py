@@ -3,7 +3,7 @@ from util import YOLO_read_license_plate
 from ultralytics import YOLO
 
 
-car = '98'
+car = '4'
 img = cv2.imread(f'data/images/Cars{car}.png')
 
 results = YOLO_read_license_plate(img)
